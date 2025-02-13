@@ -2,12 +2,143 @@
 //
 
 #include <iostream>
-#include "RDMA_CPP/RDMAServer.h"
-#include "RDMA_CPP/RDMAClient.h"
-int main()
+#include <regex>
+#include <tchar.h>
+#include <cstdlib>
+#include <RDMAServer.h>
+#include <RDMAClient.h>
+bool IsValidIPAddress(const TCHAR* ip) {
+    std::wregex ipRegex(LR"(^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$)");
+    std::wcmatch match;
+
+    if (std::regex_match(ip, match, ipRegex)) {
+        for (int i = 1; i <= 4; i++) {
+            int octet = std::stoi(match[i].str());
+            if (octet < 0 || octet > 255)
+                return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool IsValidPort(const TCHAR* port) {
+    std::wregex portRegex(LR"(^\d{1,5}$)");
+    if (std::regex_match(port, portRegex)) {
+        int portNum = _ttoi(port);
+        return portNum > 0 && portNum <= 65535;
+    }
+    return false;
+}
+
+SIZE_T GetMaxAllowedMemory() {
+    MEMORYSTATUSEX memStatus;
+    memStatus.dwLength = sizeof(memStatus);
+    if (GlobalMemoryStatusEx(&memStatus)) {
+        return static_cast<SIZE_T>(memStatus.ullTotalPhys * 0.9); // 90% 제한
+    }
+    return 0; // 실패 시 0 반환
+}
+
+void ShowUsage()
 {
-    std::cout << "Hello World!\n";
-    RDMA::RDMAServer rdmaServer = RDMA::RDMAServer();
+    printf("PlugRDMA-Windows [options] <MB Size> <IP> <Port>\n"
+        "Options:\n"
+        "\t-s            - Start as server (listen on IP/Port)\n"
+        "\t-c            - Start as client (connect to server IP/Port)\n"
+        "\t-w            - Use RMA Write (client only, default)\n"
+        "\t-r            - Use RMA Read (client only)\n"
+        "\t-h            - Help Msg\n"
+        "<memory MB>     - RDMA HeapAllocation Size(MegaByte)(Essential)\n"
+        "<ip>            - IPv4 Address(Essential)\n"
+        "<port>          - Port number(Essential)\n"
+        "Example : -s -r 1024 10.0.0.1 8888\n"
+    );
+}
+
+int _tmain(int argc, TCHAR* argv[]) {
+
+    ShowUsage();
+
+    const TCHAR* memSizeArg = argv[argc - 3];
+    const TCHAR* ipArg = argv[argc - 2];
+    const TCHAR* portArg = argv[argc - 1];
+
+    if (!IsValidIPAddress(ipArg) || !IsValidPort(portArg)) {
+        std::wcerr << L"Error: Invalid IP or Port format.\n";
+        exit(0);
+    }
+
+    size_t ipLen = wcslen(ipArg) + 1;
+    LPWSTR ipAddress = new WCHAR[ipLen];
+    wcscpy_s(ipAddress, ipLen, ipArg);
+
+    // USHORT 변환
+    USHORT portNumber = static_cast<USHORT>(_ttoi(portArg));
+
+    SIZE_T requestedMemory = static_cast<SIZE_T>(_ttoi(memSizeArg)) * 1024 * 1024;
+
+    // 최대 허용 가능한 메모리 계산 (90% 제한)
+    SIZE_T maxAllowedMemory = GetMaxAllowedMemory();
+    if (maxAllowedMemory == 0) {
+        std::wcerr << L"Error: Failed to get system memory status.\n";
+        return EXIT_FAILURE;
+    }
+
+    // 요청된 메모리가 90% 초과하면 종료
+    if (requestedMemory > maxAllowedMemory) {
+        std::wcerr << L"Error: Requested memory exceeds 90% of total system memory ("
+            << maxAllowedMemory / (1024 * 1024) << L" MB max).\n";
+        return EXIT_FAILURE;
+    }
+
+    // 메모리 할당
+    void* buffer = static_cast<char*>(HeapAlloc(GetProcessHeap(), 0, requestedMemory));
+    if (!buffer) {
+        std::wcerr << L"Error: Memory allocation failed.\n";
+        return EXIT_FAILURE;
+    }
+
+    bool bServer = false;
+    bool bRead = false;
+
+    for (int i = 1; i < argc; i++)
+    {
+        TCHAR* arg = argv[i];
+        if ((wcscmp(arg, L"-s") == 0) || (wcscmp(arg, L"-S") == 0))
+        {
+            bServer = true;
+        }
+        else if ((wcscmp(arg, L"-c") == 0) || (wcscmp(arg, L"-C") == 0))
+        {
+            bServer = false;
+        }
+        else if ((wcscmp(arg, L"-r") == 0) || (wcscmp(arg, L"--read") == 0))
+        {
+            bRead = true;
+        }
+        else if ((wcscmp(arg, L"-w") == 0) || (wcscmp(arg, L"--write") == 0))
+        {
+            bRead = false;
+        }
+        else if ((wcscmp(arg, L"-h") == 0) || (wcscmp(arg, L"--help") == 0))
+        {
+            ShowUsage();
+            exit(0);
+        }
+    }
+    if (bServer)
+    {
+        RDMA::RDMAServer rdmaServer = RDMA::RDMAServer();
+        rdmaServer.Initialize(ipAddress, portNumber, buffer, requestedMemory, bRead);
+    }
+    else
+    {
+        RDMA::RDMAClient rdmaClient = RDMA::RDMAClient();
+        rdmaClient.Initialize(ipAddress, portNumber, buffer, requestedMemory, bRead);
+    }
+
+    return 0;
 }
 
 // 프로그램 실행: <Ctrl+F5> 또는 [디버그] > [디버깅하지 않고 시작] 메뉴

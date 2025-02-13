@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.35425.106
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlugRDMA-Windows", "PlugRDMA-Windows.vcxproj", "{088EB921-6577-4CAC-BD30-09CC9DAB133C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RDMA_CPP", "RDMA_CPP\RDMA_CPP.vcxproj", "{AEEB6773-5736-459A-9CC4-109C37B07855}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RDMAPlugin", "RDMAPlugin\RDMAPlugin.vcxproj", "{AEEB6773-5736-459A-9CC4-109C37B07855}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,16 +21,16 @@ Global
 		{088EB921-6577-4CAC-BD30-09CC9DAB133C}.Debug|x86.Build.0 = Debug|x64
 		{088EB921-6577-4CAC-BD30-09CC9DAB133C}.Release|x64.ActiveCfg = Release|x64
 		{088EB921-6577-4CAC-BD30-09CC9DAB133C}.Release|x64.Build.0 = Release|x64
-		{088EB921-6577-4CAC-BD30-09CC9DAB133C}.Release|x86.ActiveCfg = Release|Win32
-		{088EB921-6577-4CAC-BD30-09CC9DAB133C}.Release|x86.Build.0 = Release|Win32
+		{088EB921-6577-4CAC-BD30-09CC9DAB133C}.Release|x86.ActiveCfg = Release|x64
+		{088EB921-6577-4CAC-BD30-09CC9DAB133C}.Release|x86.Build.0 = Release|x64
 		{AEEB6773-5736-459A-9CC4-109C37B07855}.Debug|x64.ActiveCfg = Debug|x64
 		{AEEB6773-5736-459A-9CC4-109C37B07855}.Debug|x64.Build.0 = Debug|x64
 		{AEEB6773-5736-459A-9CC4-109C37B07855}.Debug|x86.ActiveCfg = Debug|x64
 		{AEEB6773-5736-459A-9CC4-109C37B07855}.Debug|x86.Build.0 = Debug|x64
 		{AEEB6773-5736-459A-9CC4-109C37B07855}.Release|x64.ActiveCfg = Release|x64
 		{AEEB6773-5736-459A-9CC4-109C37B07855}.Release|x64.Build.0 = Release|x64
-		{AEEB6773-5736-459A-9CC4-109C37B07855}.Release|x86.ActiveCfg = Release|Win32
-		{AEEB6773-5736-459A-9CC4-109C37B07855}.Release|x86.Build.0 = Release|Win32
+		{AEEB6773-5736-459A-9CC4-109C37B07855}.Release|x86.ActiveCfg = Release|x64
+		{AEEB6773-5736-459A-9CC4-109C37B07855}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
