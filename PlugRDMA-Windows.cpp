@@ -1,6 +1,4 @@
-﻿// PlugRDMA-Windows.cpp : 이 파일에는 'main' 함수가 포함됩니다. 거기서 프로그램 실행이 시작되고 종료됩니다.
-//
-
+﻿#pragma comment(lib, "ws2_32.lib")
 #include <iostream>
 #include <regex>
 #include <tchar.h>
@@ -60,12 +58,17 @@ int _tmain(int argc, TCHAR* argv[]) {
 
     ShowUsage();
 
+    if (argc < 6) {
+        printf("You Must Enter argumnet : <IsServer> <IsRead> <MB> <IP> <Port>\n");
+        return EXIT_FAILURE;
+    }
+
     const TCHAR* memSizeArg = argv[argc - 3];
     const TCHAR* ipArg = argv[argc - 2];
     const TCHAR* portArg = argv[argc - 1];
 
     if (!IsValidIPAddress(ipArg) || !IsValidPort(portArg)) {
-        std::wcerr << L"Error: Invalid IP or Port format.\n";
+        printf("Error: Invalid IP or Port format.\n");
         exit(0);
     }
 
@@ -81,24 +84,24 @@ int _tmain(int argc, TCHAR* argv[]) {
     // 최대 허용 가능한 메모리 계산 (90% 제한)
     SIZE_T maxAllowedMemory = GetMaxAllowedMemory();
     if (maxAllowedMemory == 0) {
-        std::wcerr << L"Error: Failed to get system memory status.\n";
+        printf("Error: Failed to get system memory status.\n");
         return EXIT_FAILURE;
     }
 
     // 요청된 메모리가 90% 초과하면 종료
     if (requestedMemory > maxAllowedMemory) {
-        std::wcerr << L"Error: Requested memory exceeds 90% of total system memory ("
-            << maxAllowedMemory / (1024 * 1024) << L" MB max).\n";
+        printf("Error: Requested memory exceeds 90%% of total system memory (%lld MB max).\n",
+            maxAllowedMemory / (1024 * 1024));
         return EXIT_FAILURE;
     }
 
     // 메모리 할당
     void* buffer = static_cast<char*>(HeapAlloc(GetProcessHeap(), 0, requestedMemory));
     if (!buffer) {
-        std::wcerr << L"Error: Memory allocation failed.\n";
+        printf("Error: Memory allocation failed.\n");
         return EXIT_FAILURE;
     }
-
+    printf("Create HeapMemory Done");
     bool bServer = false;
     bool bRead = false;
 
@@ -130,14 +133,18 @@ int _tmain(int argc, TCHAR* argv[]) {
     if (bServer)
     {
         RDMA::RDMAServer rdmaServer = RDMA::RDMAServer();
-        rdmaServer.Initialize(ipAddress, portNumber, buffer, requestedMemory, bRead);
+        std::string res;
+        res = rdmaServer.Initialize(ipAddress, portNumber, buffer, requestedMemory, bRead);
+        if (res != "OK") std::cout << res << std::endl;
     }
     else
     {
         RDMA::RDMAClient rdmaClient = RDMA::RDMAClient();
-        rdmaClient.Initialize(ipAddress, portNumber, buffer, requestedMemory, bRead);
+        std::string res;
+        res = rdmaClient.Initialize(ipAddress, portNumber, buffer, requestedMemory, bRead);
+        if (res != "OK") std::cout << res << std::endl;
     }
-
+    std::cout << "RDMA Ready!!" << std::endl;
     return 0;
 }
 

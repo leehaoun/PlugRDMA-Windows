@@ -1,8 +1,13 @@
 #pragma once
+#include "ndcommon.h"
 #include "pch.h"
 #include "comdef.h"
 #include <string>
 #include <iostream>
+#include <string>
+#include <functional>
+#include <thread>
+#include <vector>
 namespace RDMA
 {
 	#define RECV    0

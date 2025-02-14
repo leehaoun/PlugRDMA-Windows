@@ -24,6 +24,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{1fd64062-c125-4452-9c8e-658633f4cff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{67c1db64-8804-4e8d-9418-842155c4e380}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="framework.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -42,19 +50,11 @@
     <ClInclude Include="RDMAClient.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="RDMAServer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="RDMACommon.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{1fd64062-c125-4452-9c8e-658633f4cff4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="헤더 파일">
-      <UniqueIdentifier>{67c1db64-8804-4e8d-9418-842155c4e380}</UniqueIdentifier>
-    </Filter>
+    <ClInclude Include="RDMAServer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,10 +1,5 @@
 #pragma once
-#include "ndcommon.h"
 #include "RDMACommon.h"
-#include <string>
-#include <functional>
-#include <thread>
-#include <vector>
 namespace RDMA
 {
 	class RDMAServer

@@ -79,7 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)Lib</OutDir>
     <IntDir>$(ProjectDir)$(Platform)\$(Configuration)\Temp</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -129,7 +129,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)NDHeader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -137,6 +137,17 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y /S "$(ProjectDir)*.h" "$(SolutionDir)Include\"
+xcopy /Y /S "$(SolutionDir)NDHeader\*" "$(SolutionDir)Include\"</Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>rmdir /S /Q "$(SolutionDir)Include"
+rmdir /S /Q "$(SolutionDir)Lib"
+
+mkdir "$(SolutionDir)Include"
+mkdir "$(SolutionDir)Lib"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -160,16 +171,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="ndaddr.h" />
-    <ClInclude Include="ndfrmwrk.h" />
-    <ClInclude Include="ndprov.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="RDMAClient.h" />
-    <ClInclude Include="RDMACommon.h" />
-    <ClInclude Include="RDMAServer.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="ndaddr.cpp" />
     <ClCompile Include="ndfrmwrk.cpp" />
     <ClCompile Include="ndprov.cpp" />
@@ -182,6 +183,16 @@
     <ClCompile Include="RDMAClient.cpp" />
     <ClCompile Include="RDMACommon.cpp" />
     <ClCompile Include="RDMAServer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="ndaddr.h" />
+    <ClInclude Include="ndfrmwrk.h" />
+    <ClInclude Include="ndprov.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="RDMAClient.h" />
+    <ClInclude Include="RDMACommon.h" />
+    <ClInclude Include="RDMAServer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
